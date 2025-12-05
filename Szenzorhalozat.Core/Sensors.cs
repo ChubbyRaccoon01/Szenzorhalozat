@@ -36,6 +36,11 @@ namespace Sensors
         }
         protected abstract string StatusUpdate();
 
+        public override string ToString()
+        {
+            return $"Name: {Name}, Type: {Type}, Value: {CurrentValue} {Unit}, CompID: {CompositeID}";
+        }
+
     }
 
 
@@ -61,6 +66,7 @@ namespace Sensors
             else
                 return "Túlmelegedés";
         }
+ 
     }
 
 

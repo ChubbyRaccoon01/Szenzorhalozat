@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Sensors;
 
 namespace Szenzorhalozat
 {
@@ -10,9 +11,9 @@ namespace Szenzorhalozat
     {
         static void Main(string[] args)
         {
-            List<Sensors()> szenzorok = new List<Sensors>();
-            szenzorok.Add(new Szenzor("Szenzor1", 10.5, "Celsius"));
-            szenzorok.Add(new Szenzor("Szenzor2", 22.3, "Celsius"));
+            List<Sensor> szenzorok = new List<Sensor>();
+            szenzorok.Add(new TemperatureSensor());
+            szenzorok.Add(new TemperatureSensor());
             
             foreach (var szenzor in szenzorok)
             {
