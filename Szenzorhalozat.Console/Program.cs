@@ -11,6 +11,7 @@ namespace Szenzorhalozat
     {
         static void Main(string[] args)
         {
+<<<<<<< HEAD
             List<Sensor> szenzorok = new List<Sensor>();
             szenzorok.Add(new TemperatureSensor());
             szenzorok.Add(new TemperatureSensor());
@@ -19,6 +20,10 @@ namespace Szenzorhalozat
             {
                 Console.WriteLine(szenzor);
             }
+=======
+            TemperatureSensor sensor = new TemperatureSensor();
+            Console.WriteLine(sensor.ValueUpd());
+>>>>>>> 3db0e45 (?)
         }
     }
 }

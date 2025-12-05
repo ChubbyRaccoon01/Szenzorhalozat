@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace Sensors
+namespace Szenzorhalozat
 {
     public abstract class Sensor
     {
