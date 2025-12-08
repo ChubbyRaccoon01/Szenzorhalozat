@@ -18,6 +18,23 @@ namespace Szenzorhalozat
             {
                 Console.WriteLine(szenzor.ToString());
             }
+
+            
+            
+            using (Database db = new Database())
+            {
+                
+                foreach (var szenzor in szenzorok)
+                {
+                    db.AddSensor(szenzor);
+                }
+
+                Console.WriteLine("\nAdatok az aktuális futtatásból:");
+                db.GetAllSensors();
+
+                Console.WriteLine("\nAz adatbázisban lévő összes tábla:");
+                db.GetAllTables();
+            }
         }
     }
 }
