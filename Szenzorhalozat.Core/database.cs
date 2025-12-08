@@ -1,11 +1,20 @@
-using EntityFrameworkCore;
+using LiteDB;
+
 namespace Szenzorhalozat
 {
-    public class Database
+    public class Database : System.IDisposable
     {
-        using (var db = new LiteDatabase("Meres.db"))
+        private LiteDatabase db;
 
+        public Database()
+        {
+            db = new LiteDatabase("Meres.db");
+        }
 
+        public void Dispose()
+        {
+            db?.Dispose();
+        }
     }
 }
 
