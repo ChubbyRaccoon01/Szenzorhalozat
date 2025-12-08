@@ -2,6 +2,7 @@
 
 namespace Szenzorhalozat
 {
+
     public abstract class Sensor
     {
         private static int sensorCounter = 1;
@@ -12,7 +13,7 @@ namespace Szenzorhalozat
         public double CurrentValue { get; protected set; }  // Mért (generált) adat
         public string Status { get; set; }                  // Típus alapján pl. - Alapjárat, terhelés, túlmelegedés
         public string CompositeID { get; protected set; }   // Szenzor típusa alapján generált összetett id: S-TEMP-001
-        
+
         public double[] MinMax = new double[2];             // Min és max értékek tárolására
         public Sensor()
         {
@@ -45,9 +46,9 @@ namespace Szenzorhalozat
 
 
 
-    public class TemperatureSensor: Sensor
+    public class TemperatureSensor : Sensor
     {
-        private double[] MaxMin = {60,120};  
+        private double[] MaxMin = { 60, 120 };
         public TemperatureSensor()
         {
             Name = "Temperature Sensor";
@@ -56,7 +57,7 @@ namespace Szenzorhalozat
             CurrentValue = Generate(MaxMin[0], MaxMin[1]);
             CompositeID = $"S-{Type.ToUpper()}-{Id:D3}";
         }
-        
+
         protected override string StatusUpdate()
         {
             if (CurrentValue < 90)
@@ -66,7 +67,7 @@ namespace Szenzorhalozat
             else
                 return "Túlmelegedés";
         }
- 
+
     }
 
 
@@ -111,7 +112,7 @@ namespace Szenzorhalozat
         {
             if (CurrentValue < 3)
                 return "Normál";
-            else if (CurrentValue< 6)
+            else if (CurrentValue < 6)
                 return "Magas";
             else
                 return "Kritikus";
@@ -163,4 +164,5 @@ namespace Szenzorhalozat
                 return "Kritikus";
         }
     }
+
 }
