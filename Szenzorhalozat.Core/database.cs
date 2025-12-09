@@ -1,18 +1,14 @@
 using LiteDB;
-using System;
 
 namespace Szenzorhalozat
 {
     public class Database : System.IDisposable
     {
         private LiteDatabase db;
-        private string currentTableName;
 
         public Database()
         {
             db = new LiteDatabase("Meres.db");
-            // Hozz létre egy új táblát az aktuális idővel
-            currentTableName = DateTime.Now.ToString("yyyyMMdd_HHmmss_fff");
         }
 
         public void Dispose()
@@ -22,13 +18,13 @@ namespace Szenzorhalozat
 
         public void AddSensor(Sensor sensor)
         {
-            var col = db.GetCollection<Sensor>(currentTableName);
+            var col = db.GetCollection<Sensor>("sensors");
             col.Insert(sensor);
         }
 
         public void GetAllSensors()
         {
-            var col = db.GetCollection<Sensor>(currentTableName);
+            var col = db.GetCollection<Sensor>("sensors");
             var sensors = col.FindAll();
             foreach (var sensor in sensors)
             {
@@ -36,25 +32,15 @@ namespace Szenzorhalozat
             }
         }
 
-        public void GetAllTables()
-        {
-            Console.WriteLine("Adatbázis táblái:");
-            foreach (var tableName in db.GetCollectionNames())
-            {
-                var col = db.GetCollection(tableName);
-                Console.WriteLine($"  {tableName} - {col.Count()} elem");
-            }
-        }
-
         public void DeleteDB()
         {
-            // Az aktuális tábla törlése
-            db.DropCollection(currentTableName);
+            // Delete all collections
+            db.DropCollection("sensors");
         }
 
         public void ClearAllData()
         {
-            // Összes táblát törlünk az adatbázisból
+            // Clear all collections in the database
             foreach (var collectionName in db.GetCollectionNames())
             {
                 db.DropCollection(collectionName);
@@ -63,7 +49,7 @@ namespace Szenzorhalozat
 
         public void DeleteAllSensors()
         {
-            var col = db.GetCollection<Sensor>(currentTableName);
+            var col = db.GetCollection<Sensor>("sensors");
             col.DeleteAll();
         }
 

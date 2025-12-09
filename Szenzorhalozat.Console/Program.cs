@@ -32,8 +32,7 @@ namespace Szenzorhalozat
                 Console.WriteLine("\nAdatok az aktuális futtatásból:");
                 db.GetAllSensors();
 
-                Console.WriteLine("\nAz adatbázisban lévő összes tábla:");
-                db.GetAllTables();
+               
             }
         }
     }
