@@ -13,14 +13,13 @@ namespace Szenzorhalozat
         public string Unit { get; protected set; }          // Pl. °C
         public double CurrentValue { get; protected set; }  // Mért (generált) adat
         public string Status { get; set; }                  // Típus alapján pl. - Alapjárat, terhelés, túlmelegedés
-<<<<<<< HEAD
-        public string CompositeID { get; protected set; }   // Szenzor típusa alapján generált összetett id: S-TEMP-001
-
-=======
         public string CompositeID { get; set; }   // Szenzor típusa alapján generált összetett id: S-TEMP-001
         
->>>>>>> database
         public double[] MinMax = new double[2];             // Min és max értékek tárolására
+
+        // Event fired when a measurement is ready
+        public event System.Action<MeresiAdat>? MeresiAdatKeszult;
+
         public Sensor()
         {
             Name = "Generic Sensor";
@@ -39,12 +38,29 @@ namespace Szenzorhalozat
             CompositeID = $"S-{Type.ToUpper()}-{Id:D3}";
         }
 
+        // Trigger a measurement: update value, status and raise event with MeresiAdat
+        public void Meres()
+        {
+            ValueUpd();
+            Status = StatusUpdate();
+
+            var adat = new MeresiAdat
+            {
+                SzenzorId = this.Id,
+                MeresIdeje = DateTime.Now,
+                Homerseklet = this.CurrentValue
+            };
+
+            MeresiAdatKeszult?.Invoke(adat);
+        }
+
         public double Generate(double min, double max)
         {
             Random random = new Random();
             return random.NextDouble() * (max - min) + min;
 
         }
+
         protected abstract string StatusUpdate();
 
         public override string ToString()
