@@ -18,8 +18,6 @@ namespace Szenzorhalozat
             {
                 Console.WriteLine(szenzor.ToString());
             }
-
-            
             
             using (Database db = new Database())
             {
@@ -31,9 +29,11 @@ namespace Szenzorhalozat
 
                 Console.WriteLine("\nAdatok az aktuális futtatásból:");
                 db.GetAllSensors();
-
-               
+                
             }
+
         }
     }
 }
+
+

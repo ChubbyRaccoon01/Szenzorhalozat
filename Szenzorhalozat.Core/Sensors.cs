@@ -1,22 +1,22 @@
 ﻿using System.Data;
+using LiteDB;
 
 namespace Szenzorhalozat
 {
     public abstract class Sensor
     {
-        private static int sensorCounter = 1;
-        public int Id { get; set; }                      // DB azonosító
+        [BsonId]
+        public int Id { get; set; }                      // DB azonosító (LiteDB auto-increment)
         public string Name { get; set; }                    // Pl. Hőmérséklet
         public string Type { get; protected set; }          // Pl. Temperature
         public string Unit { get; protected set; }          // Pl. °C
         public double CurrentValue { get; protected set; }  // Mért (generált) adat
         public string Status { get; set; }                  // Típus alapján pl. - Alapjárat, terhelés, túlmelegedés
-        public string CompositeID { get; protected set; }   // Szenzor típusa alapján generált összetett id: S-TEMP-001
+        public string CompositeID { get; set; }   // Szenzor típusa alapján generált összetett id: S-TEMP-001
         
         public double[] MinMax = new double[2];             // Min és max értékek tárolására
         public Sensor()
         {
-            Id = sensorCounter++;
             Name = "Generic Sensor";
             Type = "GENERIC";
             Unit = "N/A";
@@ -28,6 +28,11 @@ namespace Szenzorhalozat
 
         public void ValueUpd() { CurrentValue = Generate(MinMax[0], MinMax[1]); }
 
+        public void UpdateCompositeID()
+        {
+            CompositeID = $"S-{Type.ToUpper()}-{Id:D3}";
+        }
+
         public double Generate(double min, double max)
         {
             Random random = new Random();
@@ -38,7 +43,7 @@ namespace Szenzorhalozat
 
         public override string ToString()
         {
-            return $"Name: {Name}, Type: {Type}, Value: {CurrentValue} {Unit}";//, CompID: {CompositeID}";
+            return $"Name: {Name}, Type: {Type}, Value: {CurrentValue} {Unit}, CompID: {CompositeID}";
         }
 
     }
