@@ -83,7 +83,6 @@ namespace Szenzorhalozat
             foreach (var adat in adatok)
             {
                 Console.WriteLine($"Szenzor ID: {adat.SzenzorId}, Meres ideje: {adat.MeresIdeje}, Érték: {adat.Adat}");
-                Console.WriteLine(adat);
             }
         }
 
