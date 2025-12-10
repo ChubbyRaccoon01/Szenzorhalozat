@@ -1,0 +1,383 @@
+\documentclass[12pt,a4paper,magyar]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{babel}
+
+\lstset{
+    language=bash,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    stringstyle=\color{red},
+    breaklines=true,
+    showstringspaces=false,
+    tabsize=4,
+    frame=single,
+    backgroundcolor=\color{gray!10},
+    numbers=left,
+    numberstyle=\tiny
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Szenzorhalózat}
+\chead{Felhasználói Útmutató}
+\lhead{\today}
+\cfoot{\thepage}
+
+\title{\textbf{Szenzorhalózat}\\\Large{Felhasználói Útmutató}}
+\author{}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\newpage
+
+\section{Bevezetés}
+
+A Szenzorhalózat egy szenzoradatgyűjtési alkalmazás, amely különböző típusú szenzorokat kezel és azok mérési adatait egy adatbázisban tároja. Az alkalmazás automatikusan gyűjti és tároja a mérési adatokat.
+
+\section{Telepítés és Futtatás}
+
+\subsection{Előfeltételek}
+
+\begin{itemize}
+    \item \textbf{Operációs rendszer:} Windows, macOS vagy Linux
+    \item \textbf{.NET Runtime:} .NET 9.0 vagy újabb
+    \item \textbf{Szabad hely:} Legalább 100 MB
+\end{itemize}
+
+\subsection{Telepítés Lépései}
+
+\begin{enumerate}
+    \item \textbf{Projekt Letöltése}
+    \begin{lstlisting}[language=bash]
+cd /home/dev/mnt/szofi/beadando/Szenzorhalozat
+    \end{lstlisting}
+
+    \item \textbf{Függőségek Telepítése}
+    \begin{lstlisting}[language=bash]
+dotnet restore
+    \end{lstlisting}
+
+    \item \textbf{Fordítás}
+    \begin{lstlisting}[language=bash]
+dotnet build
+    \end{lstlisting}
+
+    \item \textbf{Futtatás}
+    \begin{lstlisting}[language=bash]
+dotnet run --project Szenzorhalozat.Console/\
+  Szenzorhalozat.Console.csproj
+    \end{lstlisting}
+\end{enumerate}
+
+\subsection{Gyors Indítás}
+
+\begin{lstlisting}[language=bash]
+cd /home/dev/mnt/szofi/beadando/Szenzorhalozat
+rm -f Meres.db  # Opcionális: előző adatok törlése
+dotnet run --project Szenzorhalozat.Console/\
+  Szenzorhalozat.Console.csproj
+\end{lstlisting}
+
+\section{Használat}
+
+\subsection{A Program Futtatása}
+
+Az alkalmazás indításakor az alábbi lépések történnek:
+
+\begin{enumerate}
+    \item \textbf{Szenzor Inicializálása}
+    \begin{lstlisting}[language=bash]
+Name: Temperature Sensor, Type: TEMP, Value: 116.13 °C, CompID: S-TEMP-001
+Name: Temperature Sensor, Type: TEMP, Value: 112.33 °C, CompID: S-TEMP-002
+    \end{lstlisting}
+
+    \item \textbf{Mérések Indítása}
+    \begin{itemize}
+        \item Az alkalmazás 5 alkalommal indít méréseket
+        \item Minden mérés között 1 másodperc szünet
+    \end{itemize}
+
+    \item \textbf{Mérési Adatok Megjelenítése}
+    \begin{lstlisting}[language=bash]
+Szenzor ID: 1, Meres ideje: 12/10/2025 15:59:25, Homerseklet: 93.01
+Szenzor ID: 2, Meres ideje: 12/10/2025 15:59:25, Homerseklet: 61.23
+    \end{lstlisting}
+
+    \item \textbf{Adatbázis Statisztikája}
+    \begin{lstlisting}[language=bash]
+Adatbázis táblái:
+  T20251210155924 - 2 elem
+  T20251210155924_Adatok - 10 elem
+    \end{lstlisting}
+\end{enumerate}
+
+\section{Szenzor Típusok}
+
+Az alkalmazás az alábbi szenzortípusokat támogatja:
+
+\subsection{1. Hőmérséklet Szenzor}
+
+\begin{itemize}
+    \item \textbf{Típusazonosító:} \texttt{TEMP}
+    \item \textbf{Mértékegység:} °C (Celsius-fok)
+    \item \textbf{Mérési Tartomány:} 60 -- 120 °C
+    \item \textbf{Állapotok:}
+    \begin{itemize}
+        \item Alapjárat: $<$ 90 °C
+        \item Terhelés: 90 -- 110 °C
+        \item Túlmelegedés: $>$ 110 °C
+    \end{itemize}
+\end{itemize}
+
+\subsection{2. Forgászszenzor}
+
+\begin{itemize}
+    \item \textbf{Típusazonosító:} \texttt{ROT}
+    \item \textbf{Mértékegység:} RPM (fordulat/perc)
+    \item \textbf{Mérési Tartomány:} 600 -- 3600 RPM
+    \item \textbf{Állapotok:}
+    \begin{itemize}
+        \item Alapjárat: $<$ 900 RPM
+        \item Terhelés alatt: 900 -- 3000 RPM
+        \item Kritikus: $>$ 3000 RPM
+    \end{itemize}
+\end{itemize}
+
+\subsection{3. Vibráció Szenzor}
+
+\begin{itemize}
+    \item \textbf{Típusazonosító:} \texttt{VIB}
+    \item \textbf{Mértékegység:} m/s² (méter/másodperc²)
+    \item \textbf{Mérési Tartomány:} 0.5 -- 10 m/s²
+    \item \textbf{Állapotok:}
+    \begin{itemize}
+        \item Normál: $<$ 3 m/s²
+        \item Magas: 3 -- 6 m/s²
+        \item Kritikus: $>$ 6 m/s²
+    \end{itemize}
+\end{itemize}
+
+\subsection{4. CO\textsubscript{2} Szenzor}
+
+\begin{itemize}
+    \item \textbf{Típusazonosító:} \texttt{CO2}
+    \item \textbf{Mértékegység:} PPM (részecske millióban)
+    \item \textbf{Mérési Tartomány:} 400 -- 6000 PPM
+    \item \textbf{Állapotok:}
+    \begin{itemize}
+        \item Normál: $<$ 5000 PPM
+        \item Kritikus: $>$ 5000 PPM
+    \end{itemize}
+\end{itemize}
+
+\subsection{5. Nyomás Szenzor}
+
+\begin{itemize}
+    \item \textbf{Típusazonosító:} \texttt{PRES}
+    \item \textbf{Mértékegység:} bar
+    \item \textbf{Mérési Tartomány:} 0.5 -- 3 bar
+    \item \textbf{Állapotok:}
+    \begin{itemize}
+        \item Normál: $<$ 1.5 bar
+        \item Terhelés: 1.5 -- 3 bar
+        \item Kritikus: $>$ 3 bar
+    \end{itemize}
+\end{itemize}
+
+\section{Adatbázis}
+
+\subsection{Adatfájl}
+
+\begin{itemize}
+    \item \textbf{Helye:} \texttt{Meres.db} (a projekt gyökerében)
+    \item \textbf{Formátum:} LiteDB (bináris adatbázis)
+    \item \textbf{Méret:} A mérési adatok számától függően növekszik
+\end{itemize}
+
+\subsection{Adatbázis Szerkezete}
+
+Az alkalmazás két típusú gyűjteményt használ:
+
+\begin{enumerate}
+    \item \textbf{Szenzor Gyűjtemény} (pl. \texttt{T20251210155924})
+    \begin{itemize}
+        \item Szenzor objektumok
+        \item Elemek: 2 (ebben a futtatásban)
+    \end{itemize}
+
+    \item \textbf{Mérési Adatok Gyűjtemény} (pl. \texttt{T20251210155924\_Adatok})
+    \begin{itemize}
+        \item Mérési eredmények
+        \item Elemek: 10 (5 mérés $\times$ 2 szenzor)
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Adatok Tartalmazza}
+
+Minden mérési adat az alábbi információkat tartalmazza:
+
+\begin{lstlisting}
+Szenzor ID:     1
+Meres ideje:    12/10/2025 15:59:25
+Homerseklet:    93.00813511586887  (tárolt érték)
+\end{lstlisting}
+
+\section{Közös Forgatókönyvek}
+
+\subsection{Forgatókönyv 1: Egy Futtatás Adatainak Megtekintése}
+
+\begin{enumerate}
+    \item Futtasd az alkalmazást: \texttt{dotnet run ...}
+    \item Az alkalmazás automatikusan megjeleníti:
+    \begin{itemize}
+        \item Szenzor adatokat
+        \item Mérési eredményeket
+        \item Adatbázis statisztikáját
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Forgatókönyv 2: Újabb Futtatás (új adatok)}
+
+\begin{lstlisting}[language=bash]
+dotnet run --project Szenzorhalozat.Console/\
+  Szenzorhalozat.Console.csproj
+\end{lstlisting}
+
+Az új futtatás:
+\begin{itemize}
+    \item Egy új időpecsétel-alapú gyűjteményt hoz létre
+    \item Az előző futtatások adatai megmaradnak az adatbázisban
+    \item Összes futtatás adatai elérhetőek
+\end{itemize}
+
+\subsection{Forgatókönyv 3: Adatbázis Törlése (tiszta indítás)}
+
+\begin{lstlisting}[language=bash]
+rm -f Meres.db
+dotnet run --project Szenzorhalozat.Console/\
+  Szenzorhalozat.Console.csproj
+\end{lstlisting}
+
+\section{Hibakezelés}
+
+\subsection{Hiba: "Cannot run..."}
+
+\textbf{Ok:} A projekt nem fordul le.
+
+\textbf{Megoldás:}
+\begin{lstlisting}[language=bash]
+dotnet clean
+dotnet restore
+dotnet build
+\end{lstlisting}
+
+\subsection{Hiba: "Meres.db már létezik"}
+
+\textbf{Ok:} Az előző futtatás adatai még az adatbázisban vannak.
+
+\textbf{Megoldás:} Az új adatok automatikusan hozzáadódnak az meglévő adatokhoz. Ez az elvárt viselkedés!
+
+\subsection{Hiba: Nincs kimenete az alkalmazásnak}
+
+\textbf{Ok:} Az alkalmazás háttérben fut vagy nem indul el.
+
+\textbf{Megoldás:}
+\begin{lstlisting}[language=bash]
+dotnet clean
+dotnet build
+dotnet run --project Szenzorhalozat.Console/\
+  Szenzorhalozat.Console.csproj
+\end{lstlisting}
+
+\section{Kimenete Értelmezése}
+
+\subsection{Szenzor Információ}
+
+\begin{lstlisting}
+Name: Temperature Sensor, Type: TEMP, Value: 116.13 °C, CompID: S-TEMP-001
+\end{lstlisting}
+
+\begin{itemize}
+    \item \texttt{Name}: Szenzor neve
+    \item \texttt{Type}: Szenzor típusa
+    \item \texttt{Value}: Aktuális érték
+    \item \texttt{CompID}: Szenzor azonosító (S-[TYP]-[ID])
+\end{itemize}
+
+\subsection{Mérési Kimenet}
+
+\begin{lstlisting}
+Meres inditasa...
+Szenzor ID: 1, Meres ideje: 12/10/2025 15:59:25, Homerseklet: 93.01
+Szenzor ID: 2, Meres ideje: 12/10/2025 15:59:25, Homerseklet: 61.23
+\end{lstlisting}
+
+\begin{itemize}
+    \item \texttt{Meres inditasa...}: Mérési ciklus kezdete
+    \item \texttt{Szenzor ID}: A szenzor azonosítója az adatbázisban
+    \item \texttt{Meres ideje}: A mérés időpontja (dátum és idő)
+    \item \texttt{Homerseklet}: A mért érték (általánosan minden típusú szenzorra)
+\end{itemize}
+
+\subsection{Adatbázis Statisztika}
+
+\begin{lstlisting}
+Adatbázis táblái:
+  T20251210155924 - 2 elem
+  T20251210155924_Adatok - 10 elem
+\end{lstlisting}
+
+\begin{itemize}
+    \item \texttt{T20251210155924}: Az aktuális futtatás szenzor gyűjteménye (2 szenzor)
+    \item \texttt{T20251210155924\_Adatok}: Az aktuális futtatás mérési adatok gyűjteménye (10 mérés)
+\end{itemize}
+
+\section{Kérdések és Válaszok}
+
+\subsection{K: Mit történik az előző futtatások adataival?}
+
+V: Az adatbázisban maradnak. Új futtatások minden alkalommal egy új gyűjteményt hoznak létre az aktuális időzónának megfelelő névvel.
+
+\subsection{K: Miért vannak 10 mérési adat, ha 5 mérés van?}
+
+V: Mert 2 szenzor van, és mind a kettő mér minden ciklus alatt: 5 mérés $\times$ 2 szenzor = 10 adat.
+
+\subsection{K: Lehet-e összes szenzort egyidőben futtatni?}
+
+V: Igen! A program adott időpontban mind a szenzorokat mér és azok értékeit tároja.
+
+\subsection{K: Miért más érték az első szenzor értéke minden futtatáskor?}
+
+V: Mert az értékek véletlenszerűen generálódnak a megadott tartomány (min-max) között. Ez szimulál szenzor viselkedést.
+
+\section{Verzió Információ}
+
+\begin{itemize}
+    \item \textbf{Alkalmazás Verzió:} 1.0
+    \item \textbf{.NET Verzió:} 9.0
+    \item \textbf{Adatbázis Formátum:} LiteDB 5.0.17
+    \item \textbf{Legutóbbi Frissítés:} 2025. december 10.
+\end{itemize}
+
+\newpage
+
+\begin{center}
+\Large \textbf{Köszönjük, hogy a Szenzorhalózatot használod!} \\[0.5cm]
+\small Jó munkát! 🚀
+\end{center}
+
+\end{document}

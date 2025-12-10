@@ -1,0 +1,288 @@
+\documentclass[12pt,a4paper,magyar]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{babel}
+
+\lstset{
+    language=C,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    stringstyle=\color{red},
+    breaklines=true,
+    showstringspaces=false,
+    tabsize=4,
+    frame=single,
+    backgroundcolor=\color{gray!10},
+    numbers=left,
+    numberstyle=\tiny
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Szenzorhalózat}
+\chead{Fejlesztői Útmutató}
+\lhead{\today}
+\cfoot{\thepage}
+
+\title{\textbf{Szenzorhalózat}\\\Large{Fejlesztői Útmutató}}
+\author{}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\newpage
+
+\section{Projekt Áttekintése}
+
+A Szenzorhalózat projekt egy C\# alapú szenzoradatgyűjtési rendszer, amely LiteDB-t használ az adatok persistent tárolásához. A projekt szenzorméréseket kezel és azokat időpecsételt adatbázis-gyűjteményekben tároja.
+
+\section{Projekt Struktúra}
+
+\begin{lstlisting}[language=bash]
+Szenzorhalozat/
+├── Szenzorhalozat.Core/          # Alaposztályok és üzleti logika
+│   ├── Sensors.cs                # Szenzor alapklasszok és implementációk
+│   ├── Szenzorhalozat.cs         # Szenzorrendszer vezérlő
+│   ├── database.cs               # LiteDB adatbáziskezelés
+│   ├── AdatgyujtoAllomas.cs      # Mérési adat gyűjtő
+│   └── MeresiAdat.cs             # Mérési adat model
+├── Szenzorhalozat.Console/       # Konzol alkalmazás
+│   └── Program.cs                # Belépési pont
+└── Szenzorhalozat.sln            # Solution fájl
+\end{lstlisting}
+
+\section{Főbb Komponensek}
+
+\subsection{1. Sensor -- Absztrakt Szenzor Osztály}
+
+\textbf{Fájl:} \texttt{Szenzorhalozat.Core/Sensors.cs}
+
+\begin{lstlisting}[language=C++]
+public abstract class Sensor
+{
+    [BsonId]
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Type { get; protected set; }
+    public string Unit { get; protected set; }
+    public double CurrentValue { get; protected set; }
+    public string Status { get; set; }
+    public string CompositeID { get; set; }
+    public double[] MinMax = new double[2];
+    
+    public event System.Action<MeresiAdat>? MeresiAdatKeszult;
+    
+    public void Meres()           // Mérés trigger
+    public void ValueUpd()         // Érték frissítés
+    public void UpdateCompositeID() // Composite ID generálás
+    protected abstract string StatusUpdate();
+}
+\end{lstlisting}
+
+\textbf{Kulcsfontosságú Tulajdonságok:}
+\begin{itemize}
+    \item \texttt{[BsonId]}: LiteDB automatikusan ID-t rendel hozzá
+    \item \texttt{MeresiAdatKeszult}: Event, amely mérési adatok rendelkezésre állása esetén aktiválódik
+    \item \texttt{MinMax}: Min-max tartomány az értékek generálásához
+\end{itemize}
+
+\subsection{2. Szenzor Implementációk}
+
+\textbf{Támogatott Szenzortípusok:}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Típus} & \textbf{Osztály} & \textbf{Egység} & \textbf{Tartomány} \\
+\hline
+Hőmérséklet & \texttt{TemperatureSensor} & °C & 60--120 \\
+\hline
+Forgás & \texttt{RotationSensor} & RPM & 600--3600 \\
+\hline
+Vibráció & \texttt{VibrationSensor} & m/s² & 0.5--10 \\
+\hline
+CO$_2$ & \texttt{CO2Sensor} & PPM & 400--6000 \\
+\hline
+Nyomás & \texttt{PressureSensor} & bar & 0.5--3 \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Új szenzortípus hozzáadása:}
+
+\begin{lstlisting}[language=C++]
+public class CustomSensor : Sensor
+{
+    public CustomSensor()
+    {
+        MinMax[0] = 0;      // Min érték
+        MinMax[1] = 100;    // Max érték
+        
+        Name = "Custom Sensor";
+        Type = "CUSTOM";
+        Unit = "unit";
+        CurrentValue = Generate(MinMax[0], MinMax[1]);
+        Status = StatusUpdate();
+        CompositeID = $"S-{Type.ToUpper()}-{Id:D3}";
+    }
+
+    protected override string StatusUpdate()
+    {
+        if (CurrentValue < 50)
+            return "Normal";
+        else
+            return "Alert";
+    }
+}
+\end{lstlisting}
+
+\subsection{3. Database -- Adatbáziskezelés}
+
+\textbf{Fájl:} \texttt{Szenzorhalozat.Core/database.cs}
+
+\begin{lstlisting}[language=C++]
+public class Database : IDisposable
+{
+    private LiteDatabase db;
+    private string currentTableName;
+    
+    public void AddSensor(Sensor sensor)
+    public void GetAllSensors()
+    public void AddMeresiAdat(MeresiAdat adat)
+    public void GetAllMeresiAdatok()
+    public void GetAllTables()
+}
+\end{lstlisting}
+
+\textbf{Kollekciónevezési konvenció:}
+\begin{itemize}
+    \item Szenzor adatok: \texttt{T20251210155924} (időpecsétel)
+    \item Mérési adatok: \texttt{T20251210155924\_Adatok} (időpecsétel + \texttt{\_Adatok})
+\end{itemize}
+
+\subsection{4. Szenzorhalozat -- Rendszer Vezérlő}
+
+\textbf{Fájl:} \texttt{Szenzorhalozat.Core/Szenzorhalozat.cs}
+
+\begin{lstlisting}[language=C++]
+public class Szenzorhalozat
+{
+    public List<Sensor> Szenzorok { get; set; }
+    public AdatgyujtoAllomas AdatgyujtoAllomas { get; set; }
+    public Database Database { get; set; }
+    public event MeresTriggerDelegate? MeresTrigger;
+    
+    public void SzenzorHozzaadas(Sensor szenzor)
+    public void MeresInditas()
+}
+\end{lstlisting}
+
+\section{Fejlesztési Workflow}
+
+\subsection{1. Projekt Felépítése}
+
+\begin{lstlisting}[language=bash]
+cd /home/dev/mnt/szofi/beadando/Szenzorhalozat
+dotnet build
+\end{lstlisting}
+
+\subsection{2. Függőségek}
+
+\textbf{LiteDB NuGet csomag:}
+
+\begin{lstlisting}[language=XML]
+<PackageReference Include="LiteDB" Version="5.0.17" />
+\end{lstlisting}
+
+\subsection{3. Hibakeresés}
+
+\begin{lstlisting}[language=bash]
+dotnet run --project Szenzorhalozat.Console/Szenzorhalozat.Console.csproj
+\end{lstlisting}
+
+\section{Adatáramlás}
+
+\begin{lstlisting}[language=bash]
+SzenzorHozzaadas()
+    ↓
+Database.AddSensor()  [Szenzor tárolás]
+    ↓
+MeresTrigger event handler regisztrálás
+    ↓
+MeresInditas() → Meres() hívás [5x]
+    ↓
+Sensor.MeresiAdatKeszult event
+    ↓
+AdatgyujtoAllomas.MeresiAdatFogadas()
+    ↓
+Database.AddMeresiAdat()  [Mérési adatok tárolása]
+\end{lstlisting}
+
+\section{Közös Hibák és Megoldások}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{|p{3cm}|p{3cm}|p{5cm}|}
+\hline
+\textbf{Hiba} & \textbf{Ok} & \textbf{Megoldás} \\
+\hline
+\texttt{'LiteDB' could not be found} & Hiányzó NuGet csomag & \texttt{dotnet restore} \\
+\hline
+\texttt{Cannot insert duplicate key} & ID ütközés & Statikus ID számlálóval volt probléma \\
+\hline
+\texttt{MinMax null reference} & Nincs inicializálva & \texttt{MinMax = new double[2]} az ősosztályban \\
+\hline
+\texttt{CurrentValue = 0} & MaxMin helyett MinMax & Szenzor konstruktorban beállítás \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Bővítési Lehetőségek}
+
+\begin{enumerate}
+    \item \textbf{Adatbázis Migrációk:} Régebbi adatbázis formátumokhoz támogatás
+    \item \textbf{Valós Szenzor Integráció:} Fizikai szenzorművek összekötése
+    \item \textbf{REST API:} Web interfész a szenzoradatokhoz
+    \item \textbf{Grafikonok:} Mérési adatok vizualizációja
+    \item \textbf{Riasztások:} Küszöbérték túllépés esetén értesítések
+    \item \textbf{Több Felhasználó:} Összes szenzor és futtatás kezelése
+\end{enumerate}
+
+\section{Kódolási Irányelvek}
+
+\begin{itemize}
+    \item \textbf{Naming:} Magyarul, PascalCase az osztályok és metódusok számára
+    \item \textbf{Error Handling:} \texttt{using} utasítás az \texttt{IDisposable} objektumokhoz
+    \item \textbf{Events:} Nullable event handlers (\texttt{event Type? EventName})
+    \item \textbf{Database:} Mindig \texttt{Dispose()} meghívása vagy \texttt{using} statement
+\end{itemize}
+
+\section{Verziózás}
+
+\begin{itemize}
+    \item \textbf{Cél Framework:} .NET 9.0
+    \item \textbf{C\# verzió:} Latest
+    \item \textbf{LiteDB verzió:} 5.0.17
+\end{itemize}
+
+\newpage
+
+\begin{center}
+\textit{A dokumentáció végéhez értünk.}
+\end{center}
+
+\end{document}
