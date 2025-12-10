@@ -74,13 +74,15 @@ namespace Szenzorhalozat
 
     public class TemperatureSensor : Sensor
     {
-        private double[] MaxMin = { 60, 120 };
         public TemperatureSensor()
         {
+            MinMax[0] = 60;
+            MinMax[1] = 120;
+            
             Name = "Temperature Sensor";
             Type = "TEMP";
             Unit = "°C";
-            CurrentValue = Generate(MaxMin[0], MaxMin[1]);
+            CurrentValue = Generate(MinMax[0], MinMax[1]);
             CompositeID = $"S-{Type.ToUpper()}-{Id:D3}";
         }
 
@@ -99,13 +101,15 @@ namespace Szenzorhalozat
 
     public class RotationSensor : Sensor
     {
-        private double[] MaxMin = { 600, 3600 };
         public RotationSensor()
         {
+            MinMax[0] = 600;
+            MinMax[1] = 3600;
+            
             Name = "Rotation Sensor";
             Type = "ROT";
             Unit = "RPM";
-            CurrentValue = Generate(MaxMin[0], MaxMin[1]);
+            CurrentValue = Generate(MinMax[0], MinMax[1]);
             Status = StatusUpdate();
             CompositeID = $"S-{Type.ToUpper()}-{Id:D3}";
         }
@@ -123,13 +127,15 @@ namespace Szenzorhalozat
 
     public class VibrationSensor : Sensor
     {
-        private double[] MaxMin = { 0.5, 10 };
         public VibrationSensor()
         {
+            MinMax[0] = 0.5;
+            MinMax[1] = 10;
+            
             Name = "Vibration Sensor";
             Type = "VIB";
             Unit = "m/s²";
-            CurrentValue = Generate(MaxMin[0], MaxMin[1]);
+            CurrentValue = Generate(MinMax[0], MinMax[1]);
             Status = StatusUpdate();
             CompositeID = $"S-{Type.ToUpper()}-{Id:D3}";
         }
@@ -147,13 +153,15 @@ namespace Szenzorhalozat
 
     public class CO2Sensor : Sensor
     {
-        private double[] MaxMin = { 400, 6000 };
         public CO2Sensor()
         {
+            MinMax[0] = 400;
+            MinMax[1] = 6000;
+            
             Name = "CO2 Sensor";
             Type = "CO2";
             Unit = "PPM";
-            CurrentValue = Generate(MaxMin[0], MaxMin[1]);
+            CurrentValue = Generate(MinMax[0], MinMax[1]);
             Status = StatusUpdate();
             CompositeID = $"S-{Type.ToUpper()}-{Id:D3}";
         }
@@ -169,13 +177,15 @@ namespace Szenzorhalozat
 
     public class PressureSensor : Sensor
     {
-        private double[] MaxMin = { 0.5, 3 };
         public PressureSensor()
         {
+            MinMax[0] = 0.5;
+            MinMax[1] = 3;
+            
             Name = "Pressure Sensor";
             Type = "PRES";
             Unit = "bar";
-            CurrentValue = Generate(MaxMin[0], MaxMin[1]);
+            CurrentValue = Generate(MinMax[0], MinMax[1]);
             Status = StatusUpdate();
             CompositeID = $"S-{Type.ToUpper()}-{Id:D3}";
         }

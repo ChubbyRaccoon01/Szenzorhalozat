@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Szenzorhalozat;
 
 namespace Szenzorhalozat
 {
@@ -10,30 +11,26 @@ namespace Szenzorhalozat
     {
         static void Main(string[] args)
         {
-            List<Sensor> szenzorok = new List<Sensor>();
-            szenzorok.Add(new TemperatureSensor());
-            szenzorok.Add(new TemperatureSensor());
-
-            foreach (var szenzor in szenzorok)
-            {
-                Console.WriteLine(szenzor.ToString());
-            }
+            var szenzorhalo = new Szenzorhalozat();
             
-            using (Database db = new Database())
-            {
-                
-                foreach (var szenzor in szenzorok)
-                {
-                    db.AddSensor(szenzor);
-                }
+            szenzorhalo.SzenzorHozzaadas(new TemperatureSensor());
+            szenzorhalo.SzenzorHozzaadas(new TemperatureSensor());
+            szenzorhalo.SzenzorHozzaadas(new RotationSensor());
+            szenzorhalo.SzenzorHozzaadas(new VibrationSensor());
+            szenzorhalo.SzenzorHozzaadas(new CO2Sensor());
+            szenzorhalo.SzenzorHozzaadas(new PressureSensor());
 
-                Console.WriteLine("\nAdatok az aktuális futtatásból:");
-                db.GetAllSensors();
-                
-            }
 
+            szenzorhalo.MeresInditas();
+
+            Console.WriteLine("\nAz adatbázisban tárolt mérési adatok:");
+            szenzorhalo.Database.GetAllMeresiAdatok();
+
+            Console.WriteLine("\nAz adatbázis statisztikája:");
+            szenzorhalo.Database.GetAllTables();
+
+            szenzorhalo.Database.Dispose();
         }
     }
 }
-
 
