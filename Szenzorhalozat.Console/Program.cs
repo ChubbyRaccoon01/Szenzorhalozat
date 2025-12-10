@@ -25,7 +25,7 @@ namespace Szenzorhalozat
 
             szenzorhalo.MeresInditas();
 
-            using (var db = new Database())
+            using (var db = szenzorhalo.Database)
             {
                 bool exitRequested = false;
 
@@ -35,7 +35,7 @@ namespace Szenzorhalozat
                     {
                         DisplayMainMenu();
                         int choice = GetUserChoice();
-                        ProcessChoice(choice, system, db);
+                        ProcessChoice(choice, szenzorhalo, db);
                         exitRequested = choice == 4;
                     }
                     catch (FormatException)
@@ -120,13 +120,7 @@ namespace Szenzorhalozat
 
 
 
-            Console.WriteLine("\nAz adatbázisban tárolt mérési adatok:");
-            szenzorhalo.Database.GetAllMeresiAdatok();
-
-            Console.WriteLine("\nAz adatbázis statisztikája:");
-            szenzorhalo.Database.GetAllTables();
-
-            szenzorhalo.Database.Dispose();
+           
         }
     }
 }
