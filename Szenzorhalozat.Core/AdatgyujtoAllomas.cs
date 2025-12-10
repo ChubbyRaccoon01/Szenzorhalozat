@@ -20,11 +20,5 @@ namespace Szenzorhalozat
             Database?.AddMeresiAdat(adat);
         }
 
-        public void ElsoKiertekeles()
-        {
-            System.Console.WriteLine("Elso kiertekeles kezdete...");
-            var atlagAdat = Adatok.Average(a => a.Adat);
-            System.Console.WriteLine($"Atlagos homerseklet: {atlagAdat}");
-        }
     }
 }
