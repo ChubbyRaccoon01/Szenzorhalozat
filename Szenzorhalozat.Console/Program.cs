@@ -12,19 +12,23 @@ namespace Szenzorhalozat
     {
         static void Main(string[] args)
         {
-            var system = new Szenzorhalozat();
+
+            var szenzorhalo = new Szenzorhalozat();
             
-            var t1 = new TemperatureSensor();
-            var r1 = new RotationSensor();
-            system.SzenzorHozzaadas(t1);
-            system.SzenzorHozzaadas(r1);
+
+            szenzorhalo.SzenzorHozzaadas(new TemperatureSensor());
+            szenzorhalo.SzenzorHozzaadas(new TemperatureSensor());
+            szenzorhalo.SzenzorHozzaadas(new RotationSensor());
+            szenzorhalo.SzenzorHozzaadas(new VibrationSensor());
+            szenzorhalo.SzenzorHozzaadas(new CO2Sensor());
+            szenzorhalo.SzenzorHozzaadas(new PressureSensor());
+
+            szenzorhalo.MeresInditas();
 
             
             using (var db = new Database())
             {
                 
-                db.AddSensor(t1);
-                db.AddSensor(r1);
 
                 while (true)
                 {
@@ -33,7 +37,7 @@ namespace Szenzorhalozat
                     Console.WriteLine();
                     if (key == '1')
                     {
-                        foreach (var s in system.Szenzorok) Console.WriteLine(s);
+                        foreach (var s in szenzorhalo.Szenzorok) Console.WriteLine(s);
                     }
                     else if (key == '3')
                     {
@@ -49,7 +53,7 @@ namespace Szenzorhalozat
                         string fileName = "sensors_export.json";
 
                         Console.WriteLine("Beginning serialization...");
-                        string jsonString = JsonSerializer.Serialize(system.Szenzorok, new JsonSerializerOptions { WriteIndented = true });
+                        string jsonString = JsonSerializer.Serialize(szenzorhalo.Szenzorok, new JsonSerializerOptions { WriteIndented = true });
                         Console.WriteLine("Serialization Complete.");
                         using (var writer = new System.IO.StreamWriter(fileName))
                         {
@@ -67,17 +71,9 @@ namespace Szenzorhalozat
             
             
             
-            var szenzorhalo = new Szenzorhalozat();
             
-            szenzorhalo.SzenzorHozzaadas(new TemperatureSensor());
-            szenzorhalo.SzenzorHozzaadas(new TemperatureSensor());
-            szenzorhalo.SzenzorHozzaadas(new RotationSensor());
-            szenzorhalo.SzenzorHozzaadas(new VibrationSensor());
-            szenzorhalo.SzenzorHozzaadas(new CO2Sensor());
-            szenzorhalo.SzenzorHozzaadas(new PressureSensor());
 
 
-            szenzorhalo.MeresInditas();
 
             Console.WriteLine("\nAz adatbázisban tárolt mérési adatok:");
             szenzorhalo.Database.GetAllMeresiAdatok();

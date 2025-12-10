@@ -1,0 +1,56 @@
+[
+  {
+    "Id": 1,
+    "Name": "Temperature Sensor",
+    "Type": "TEMP",
+    "Unit": "\u00B0C",
+    "CurrentValue": 114.53937188623168,
+    "Status": "T\u00FAlmeleged\u00E9s",
+    "CompositeID": "S-TEMP-001"
+  },
+  {
+    "Id": 2,
+    "Name": "Temperature Sensor",
+    "Type": "TEMP",
+    "Unit": "\u00B0C",
+    "CurrentValue": 111.99210110738696,
+    "Status": "T\u00FAlmeleged\u00E9s",
+    "CompositeID": "S-TEMP-002"
+  },
+  {
+    "Id": 3,
+    "Name": "Rotation Sensor",
+    "Type": "ROT",
+    "Unit": "RPM",
+    "CurrentValue": 3119.690563655493,
+    "Status": "Kritikus",
+    "CompositeID": "S-ROT-003"
+  },
+  {
+    "Id": 4,
+    "Name": "Vibration Sensor",
+    "Type": "VIB",
+    "Unit": "m/s\u00B2",
+    "CurrentValue": 1.0375453131160368,
+    "Status": "Norm\u00E1l",
+    "CompositeID": "S-VIB-004"
+  },
+  {
+    "Id": 5,
+    "Name": "CO2 Sensor",
+    "Type": "CO2",
+    "Unit": "PPM",
+    "CurrentValue": 4626.874984648248,
+    "Status": "Norm\u00E1l",
+    "CompositeID": "S-CO2-005"
+  },
+  {
+    "Id": 6,
+    "Name": "Pressure Sensor",
+    "Type": "PRES",
+    "Unit": "bar",
+    "CurrentValue": 2.5950076047507054,
+    "Status": "Terhel\u00E9s",
+    "CompositeID": "S-PRES-006"
+  }
+]

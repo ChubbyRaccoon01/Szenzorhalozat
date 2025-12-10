@@ -82,7 +82,7 @@ namespace Szenzorhalozat
             var adatok = col.FindAll();
             foreach (var adat in adatok)
             {
-                Console.WriteLine($"Szenzor ID: {adat.SzenzorId}, Meres ideje: {adat.MeresIdeje}, Homerseklet: {adat.Homerseklet}");
+                Console.WriteLine($"Szenzor ID: {adat.SzenzorId}, Meres ideje: {adat.MeresIdeje}, Homerseklet: {adat.Adat}");
             }
         }
 
