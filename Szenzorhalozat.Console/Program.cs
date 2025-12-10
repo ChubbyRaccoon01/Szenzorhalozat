@@ -25,48 +25,93 @@ namespace Szenzorhalozat
 
             szenzorhalo.MeresInditas();
 
-            
             using (var db = new Database())
             {
-                
+                bool exitRequested = false;
 
-                while (true)
+                while (!exitRequested)
                 {
-                    Console.WriteLine("\n1) List sensors  2) Export JSON  3) Show DB  4) Exit");
-                    var key = Console.ReadKey(intercept: true).KeyChar;
-                    Console.WriteLine();
-                    if (key == '1')
+                    try
                     {
-                        foreach (var s in szenzorhalo.Szenzorok) Console.WriteLine(s);
+                        DisplayMainMenu();
+                        int choice = GetUserChoice();
+                        ProcessChoice(choice, system, db);
+                        exitRequested = choice == 4;
                     }
-                    else if (key == '3')
+                    catch (FormatException)
                     {
-                        Console.WriteLine("DB contents:");
-                        db.GetAllSensors(); 
+                        Console.WriteLine("Error: Please enter a valid number.");
+                        WaitForUser();
                     }
-                    else if (key == '4')
+                    catch (OverflowException)
                     {
-                        break;
+                        Console.WriteLine("Error: The number is too large or too small.");
+                        WaitForUser();
                     }
-                    else if (key == '2')
+                    catch (Exception ex)
                     {
-                        string fileName = "sensors_export.json";
-
-                        Console.WriteLine("Beginning serialization...");
-                        string jsonString = JsonSerializer.Serialize(szenzorhalo.Szenzorok, new JsonSerializerOptions { WriteIndented = true });
-                        Console.WriteLine("Serialization Complete.");
-                        using (var writer = new System.IO.StreamWriter(fileName))
-                        {
-                            writer.Write(jsonString);
-                        }
-                        Console.WriteLine($"Export complete. Filename:{fileName}");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Unknown option.");
+                        Console.WriteLine($"Unexpected error: {ex.Message}");
+                        WaitForUser();
                     }
                 }
             }
+        }
+
+        private static void ProcessChoice(int choice, Szenzorhalozat system, Database db)
+        {
+            switch (choice)
+            {
+                case 1:
+                    Console.WriteLine("List of Sensors:");
+                    foreach (var s in system.Szenzorok)
+                    {
+                        Console.WriteLine(s);
+                    }
+                    break;
+                case 2:
+                    Console.WriteLine("Exporting JSON...");
+                    string fileName = "sensors_export.json";
+                    Console.WriteLine("Beginning serialization...");
+                    string jsonString = JsonSerializer.Serialize(system.Szenzorok, new JsonSerializerOptions { WriteIndented = true });
+                    Console.WriteLine("Serialization Complete.");
+                    System.IO.File.WriteAllText(fileName, jsonString);
+                    Console.WriteLine($"Export complete. Filename:{fileName}");
+                    break;
+                case 3:
+                    Console.WriteLine("DB contents:");
+                    db.GetAllSensors();
+                    break;
+                case 4:
+                    Console.WriteLine("Exiting...");
+                    break;
+                default:
+                    Console.WriteLine("Unknown option.");
+                    break;
+            }
+            WaitForUser();
+        }
+
+        private static void WaitForUser()
+        {
+            Console.WriteLine("Please press any key to continue...");
+            Console.ReadKey(intercept: true);
+        }
+
+        static void DisplayMainMenu()
+        {
+            Console.Clear();
+            Console.WriteLine("=== Main Menu ===");
+            Console.WriteLine("1. List Sensors");
+            Console.WriteLine("2. Export JSON");
+            Console.WriteLine("3. List Database Content");
+            Console.WriteLine("4. Exit");
+            Console.Write("Enter your choice: ");
+        }
+
+        static int GetUserChoice()
+        { 
+            string input = Console.ReadLine();
+            return int.Parse(input);
 
             
             
