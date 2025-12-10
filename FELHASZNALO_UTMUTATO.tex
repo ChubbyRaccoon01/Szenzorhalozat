@@ -103,27 +103,118 @@ Az alkalmazás indításakor az alábbi lépések történnek:
     \begin{lstlisting}[language=bash]
 Name: Temperature Sensor, Type: TEMP, Value: 116.13 °C, CompID: S-TEMP-001
 Name: Temperature Sensor, Type: TEMP, Value: 112.33 °C, CompID: S-TEMP-002
+Name: Rotation Sensor, Type: ROT, Value: 2800.45 RPM, CompID: S-ROT-003
+Name: Vibration Sensor, Type: VIB, Value: 4.23 m/s², CompID: S-VIB-004
+Name: CO2 Sensor, Type: CO2, Value: 3500 PPM, CompID: S-CO2-005
+Name: Pressure Sensor, Type: PRES, Value: 1.8 bar, CompID: S-PRES-006
     \end{lstlisting}
 
     \item \textbf{Mérések Indítása}
     \begin{itemize}
         \item Az alkalmazás 5 alkalommal indít méréseket
         \item Minden mérés között 1 másodperc szünet
+        \item Az összes szenzor mér (6 szenzor $\times$ 5 mérés = 30 mérési adat)
     \end{itemize}
 
     \item \textbf{Mérési Adatok Megjelenítése}
     \begin{lstlisting}[language=bash]
-Szenzor ID: 1, Meres ideje: 12/10/2025 15:59:25, Homerseklet: 93.01
-Szenzor ID: 2, Meres ideje: 12/10/2025 15:59:25, Homerseklet: 61.23
+Meres inditasa...
+Szenzor ID: 1, Meres ideje: 12/10/2025 15:59:25, Adat: 93.01
+Szenzor ID: 2, Meres ideje: 12/10/2025 15:59:25, Adat: 61.23
+...
     \end{lstlisting}
 
     \item \textbf{Adatbázis Statisztikája}
     \begin{lstlisting}[language=bash]
 Adatbázis táblái:
-  T20251210155924 - 2 elem
-  T20251210155924_Adatok - 10 elem
+  T20251210155924 - 6 elem
+  T20251210155924_Adatok - 30 elem
     \end{lstlisting}
 \end{enumerate}
+
+\subsection{Interaktív Menü}
+
+A mérések befejezése után az alkalmazás egy interaktív menüt mutat:
+
+\begin{lstlisting}[language=bash]
+=== Main Menu ===
+1. List Sensors
+2. Export JSON
+3. List Database Content
+4. Exit
+Enter your choice: 
+\end{lstlisting}
+
+\subsubsection{1. List Sensors (Szenzorok Listázása)}
+
+Ez a menüpont lehetővé teszi a szenzorokat típus szerint szűrni és megjeleníteni:
+
+\begin{lstlisting}[language=bash]
+===Sensor Listing===
+1. List All
+====================
+List by Type: 
+2. Temperature Sensors
+3. Rotation Sensors
+4. Vibration Sensors
+5. CO2 Sensors
+6. Pressure Sensors
+====================
+7. Return to Main Menu
+Enter your choice: 
+\end{lstlisting}
+
+\textbf{Opciók:}
+\begin{itemize}
+    \item \textbf{1. List All}: Minden szenzor megjelenítése
+    \item \textbf{2--6}: Adott típusú szenzor szűrése (LINQ \texttt{OfType<>()} használatával)
+    \item \textbf{7}: Vissza a főmenüre
+\end{itemize}
+
+\textbf{Kimenet Példa (Temperature szenzor):}
+\begin{lstlisting}[language=bash]
+Temperature Sensors:
+Name: Temperature Sensor, Type: TEMP, Value: 116.13 °C, CompID: S-TEMP-001
+Name: Temperature Sensor, Type: TEMP, Value: 112.33 °C, CompID: S-TEMP-002
+\end{lstlisting}
+
+\subsubsection{2. Export JSON (JSON Exportálás)}
+
+A szenzorokat JSON formátumban exportálja a \texttt{sensors\_export.json} fájlba.
+
+\begin{lstlisting}[language=bash]
+# Létrehozódott fájl
+sensors_export.json
+
+# Tartalma:
+[
+  {
+    "id": 1,
+    "name": "Temperature Sensor",
+    "type": "TEMP",
+    "unit": "°C",
+    "currentValue": 116.13,
+    "status": "Terhelés",
+    "compositeID": "S-TEMP-001",
+    "minMax": [60, 120]
+  },
+  ...
+]
+\end{lstlisting}
+
+\subsubsection{3. List Database Content (Adatbázis Tartalom)}
+
+Megjeleníti az összes mérési adatot az adatbázisból:
+
+\begin{lstlisting}[language=bash]
+Szenzor ID: 1, Meres ideje: 12/10/2025 15:59:25, Érték: 93.00813511586887
+Szenzor ID: 2, Meres ideje: 12/10/2025 15:59:25, Érték: 61.227329681256315
+...
+\end{lstlisting}
+
+\subsubsection{4. Exit (Kilépés)}
+
+Az alkalmazás bezárása és az adatbázis korrekt lezárása.
 
 \section{Szenzor Típusok}
 
@@ -216,13 +307,13 @@ Az alkalmazás két típusú gyűjteményt használ:
     \item \textbf{Szenzor Gyűjtemény} (pl. \texttt{T20251210155924})
     \begin{itemize}
         \item Szenzor objektumok
-        \item Elemek: 2 (ebben a futtatásban)
+        \item Elemek: 6 (ebben a futtatásban)
     \end{itemize}
 
     \item \textbf{Mérési Adatok Gyűjtemény} (pl. \texttt{T20251210155924\_Adatok})
     \begin{itemize}
         \item Mérési eredmények
-        \item Elemek: 10 (5 mérés $\times$ 2 szenzor)
+        \item Elemek: 30 (5 mérés $\times$ 6 szenzor)
     \end{itemize}
 \end{enumerate}
 
@@ -233,24 +324,55 @@ Minden mérési adat az alábbi információkat tartalmazza:
 \begin{lstlisting}
 Szenzor ID:     1
 Meres ideje:    12/10/2025 15:59:25
-Homerseklet:    93.00813511586887  (tárolt érték)
+Adat:           93.00813511586887  (tárolt érték)
 \end{lstlisting}
 
 \section{Közös Forgatókönyvek}
 
-\subsection{Forgatókönyv 1: Egy Futtatás Adatainak Megtekintése}
+\subsection{Forgatókönyv 1: Szenzor Listázása Típus Szerint}
 
 \begin{enumerate}
-    \item Futtasd az alkalmazást: \texttt{dotnet run ...}
-    \item Az alkalmazás automatikusan megjeleníti:
-    \begin{itemize}
-        \item Szenzor adatokat
-        \item Mérési eredményeket
-        \item Adatbázis statisztikáját
-    \end{itemize}
+    \item Futtasd az alkalmazást
+    \item Válaszd az ``1. List Sensors'' opciót a főmenüből
+    \item Válaszd a kívánt szenzor típust (pl. ``2. Temperature Sensors'')
+    \item Az alkalmazás megjeleníti az adott típusú szenzorokat
 \end{enumerate}
 
-\subsection{Forgatókönyv 2: Újabb Futtatás (új adatok)}
+\textbf{Kimenet:}
+\begin{lstlisting}[language=bash]
+All Sensors:
+Name: Temperature Sensor, Type: TEMP, Value: 116.13 °C, CompID: S-TEMP-001
+Name: Temperature Sensor, Type: TEMP, Value: 112.33 °C, CompID: S-TEMP-002
+Name: Rotation Sensor, Type: ROT, Value: 2800.45 RPM, CompID: S-ROT-003
+...
+\end{lstlisting}
+
+\subsection{Forgatókönyv 2: Szenzor Adatok JSON Exportálása}
+
+\begin{enumerate}
+    \item Futtasd az alkalmazást
+    \item Válaszd az ``2. Export JSON'' opciót a főmenüből
+    \item Az alkalmazás létrehozza a \texttt{sensors\_export.json} fájlt
+    \item A fájl megnyitható szövegszerkesztővel vagy JSON viewerrel
+\end{enumerate}
+
+\subsection{Forgatókönyv 3: Mérési Adatok Megtekintése}
+
+\begin{enumerate}
+    \item Futtasd az alkalmazást
+    \item Válaszd a ``3. List Database Content'' opciót a főmenüből
+    \item Az alkalmazás megjeleníti az összes tárolt mérési adatot
+\end{enumerate}
+
+\textbf{Kimenet:}
+\begin{lstlisting}[language=bash]
+DB contents:
+Szenzor ID: 1, Meres ideje: 12/10/2025 15:59:25, Érték: 93.00813511586887
+Szenzor ID: 2, Meres ideje: 12/10/2025 15:59:25, Érték: 61.227329681256315
+...
+\end{lstlisting}
+
+\subsection{Forgatókönyv 4: Újabb Futtatás (új adatok)}
 
 \begin{lstlisting}[language=bash]
 dotnet run --project Szenzorhalozat.Console/\
@@ -264,7 +386,7 @@ Az új futtatás:
     \item Összes futtatás adatai elérhetőek
 \end{itemize}
 
-\subsection{Forgatókönyv 3: Adatbázis Törlése (tiszta indítás)}
+\subsection{Forgatókönyv 5: Adatbázis Törlése (tiszta indítás)}
 
 \begin{lstlisting}[language=bash]
 rm -f Meres.db
@@ -322,28 +444,28 @@ Name: Temperature Sensor, Type: TEMP, Value: 116.13 °C, CompID: S-TEMP-001
 
 \begin{lstlisting}
 Meres inditasa...
-Szenzor ID: 1, Meres ideje: 12/10/2025 15:59:25, Homerseklet: 93.01
-Szenzor ID: 2, Meres ideje: 12/10/2025 15:59:25, Homerseklet: 61.23
+Szenzor ID: 1, Meres ideje: 12/10/2025 15:59:25, Adat: 93.01
+Szenzor ID: 2, Meres ideje: 12/10/2025 15:59:25, Adat: 61.23
 \end{lstlisting}
 
 \begin{itemize}
     \item \texttt{Meres inditasa...}: Mérési ciklus kezdete
     \item \texttt{Szenzor ID}: A szenzor azonosítója az adatbázisban
     \item \texttt{Meres ideje}: A mérés időpontja (dátum és idő)
-    \item \texttt{Homerseklet}: A mért érték (általánosan minden típusú szenzorra)
+    \item \texttt{Adat}: A mért érték (minden szenzortípusra vonatkozik)
 \end{itemize}
 
 \subsection{Adatbázis Statisztika}
 
 \begin{lstlisting}
 Adatbázis táblái:
-  T20251210155924 - 2 elem
-  T20251210155924_Adatok - 10 elem
+  T20251210155924 - 6 elem
+  T20251210155924_Adatok - 30 elem
 \end{lstlisting}
 
 \begin{itemize}
-    \item \texttt{T20251210155924}: Az aktuális futtatás szenzor gyűjteménye (2 szenzor)
-    \item \texttt{T20251210155924\_Adatok}: Az aktuális futtatás mérési adatok gyűjteménye (10 mérés)
+    \item \texttt{T20251210155924}: Az aktuális futtatás szenzor gyűjteménye (6 szenzor)
+    \item \texttt{T20251210155924\_Adatok}: Az aktuális futtatás mérési adatok gyűjteménye (30 mérés)
 \end{itemize}
 
 \section{Kérdések és Válaszok}
@@ -352,9 +474,9 @@ Adatbázis táblái:
 
 V: Az adatbázisban maradnak. Új futtatások minden alkalommal egy új gyűjteményt hoznak létre az aktuális időzónának megfelelő névvel.
 
-\subsection{K: Miért vannak 10 mérési adat, ha 5 mérés van?}
+\subsection{K: Miért vannak 30 mérési adat, ha 5 mérés van?}
 
-V: Mert 2 szenzor van, és mind a kettő mér minden ciklus alatt: 5 mérés $\times$ 2 szenzor = 10 adat.
+V: Mert 6 szenzor van, és mind a hat mér minden ciklus alatt: 5 mérés $\times$ 6 szenzor = 30 adat.
 
 \subsection{K: Lehet-e összes szenzort egyidőben futtatni?}
 

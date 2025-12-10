@@ -132,6 +132,57 @@ public class Szenzorhalozat
 }
 ```
 
+## Program.cs - Interaktív Alkalmazás
+
+**Fájl:** `Szenzorhalozat.Console/Program.cs`
+
+Az alkalmazás egy interaktív menürendszert tartalmaz LINQ-alapú szenzó szűréssel:
+
+```csharp
+// Hovedmenü lehetőségek
+1. List Sensors       // Szenzorok listázása típus szerint
+2. Export JSON        // Szenzorok JSON exportálása
+3. List Database      // Adatbázis tartalmának megtekintése
+4. Exit               // Kilépés
+
+// Szenzó listázás LINQ-val
+var sensors = system.Szenzorok ?? Enumerable.Empty<Sensor>();
+
+// Összes szenzor
+sensors.Select(s => s.ToString()).ToList()
+
+// Szűrés típus szerint
+sensors.OfType<TemperatureSensor>().Select(s => s.ToString()).ToList()
+sensors.OfType<RotationSensor>().Select(s => s.ToString()).ToList()
+sensors.OfType<VibrationSensor>().Select(s => s.ToString()).ToList()
+sensors.OfType<CO2Sensor>().Select(s => s.ToString()).ToList()
+sensors.OfType<PressureSensor>().Select(s => s.ToString()).ToList()
+```
+
+**Főbb LINQ Módszerek:**
+- `OfType<T>()`: Típusspecifikus szűrés
+- `Select()`: Szenzor string reprezentációra konvertálás
+- `ToList()`: Eredmények gyűjteménnyé alakítása
+- `?? Enumerable.Empty()`: Null-kezelés biztonságosan
+
+### AdatgyujtoAllomas - Adat Gyűjtés
+
+**Fájl:** `Szenzorhalozat.Core/AdatgyujtoAllomas.cs`
+
+```csharp
+public class AdatgyujtoAllomas
+{
+    public List<MeresiAdat> Adatok { get; set; }  // Gyűjtött adatok
+    private Database? Database { get; set; }
+    
+    public void MeresiAdatFogadas(MeresiAdat adat)
+    {
+        Adatok.Add(adat);                          // Memóriabeli gyűjtés
+        Database?.AddMeresiAdat(adat);             // Adatbázis tárolás
+    }
+}
+```
+
 ## Fejlesztési Workflow
 
 ### 1. Projekt Felépítése
@@ -148,15 +199,35 @@ dotnet build
 <PackageReference Include="LiteDB" Version="5.0.17" />
 ```
 
-### 3. Hibakeresés
+### 3. Hibakeresés és Futtatás
 
 ```bash
+# Debug mód
 dotnet run --project Szenzorhalozat.Console/Szenzorhalozat.Console.csproj
+
+# Release build
+dotnet publish -c Release -o ./publish
+./publish/Szenzorhalozat.Console
 ```
+
+**Alkalmazás futása után:**
+- 6 szenzor automatikus hozzáadása
+- 5 mérési ciklus lebonyolítása
+- Interaktív menü megjelenítése:
+  ```
+  === Main Menu ===
+  1. List Sensors
+  2. Export JSON
+  3. List Database Content
+  4. Exit
+  ```
 
 ### 4. Adatbázis Vizsgálata
 
-Az `Meres.db` fájl egy bináris LiteDB fájl. Lekérdezéshez használd a `Database` osztály metódusait vagy a LiteDB Studio-t.
+Az `Meres.db` fájl egy bináris LiteDB fájl. Lekérdezéshez:
+- Használd a `Database` osztály metódusait (`GetAllMeresiAdatok()`)
+- Vagy a LiteDB Studio-t bináris megjelenítéshez
+- Vagy az alkalmazás menüjét ("List Database Content")
 
 ## Adatáramlás
 
