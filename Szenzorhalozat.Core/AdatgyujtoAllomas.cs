@@ -12,14 +12,14 @@ namespace Szenzorhalozat
         public void MeresiAdatFogadas(MeresiAdat adat)
         {
             Adatok.Add(adat);
-            System.Console.WriteLine($"Szenzor ID: {adat.SzenzorId}, Meres ideje: {adat.MeresIdeje}, Homerseklet: {adat.Homerseklet}");
+            System.Console.WriteLine($"Szenzor ID: {adat.SzenzorId}, Meres ideje: {adat.MeresIdeje}, Adat: {adat.Adat}");
         }
 
         public void ElsoKiertekeles()
         {
             System.Console.WriteLine("Elso kiertekeles kezdete...");
-            var atlagHomerseklet = Adatok.Average(a => a.Homerseklet);
-            System.Console.WriteLine($"Atlagos homerseklet: {atlagHomerseklet}");
+            var atlagAdat = Adatok.Average(a => a.Adat);
+            System.Console.WriteLine($"Atlagos homerseklet: {atlagAdat}");
         }
     }
 }

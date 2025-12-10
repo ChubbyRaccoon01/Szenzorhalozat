@@ -48,7 +48,7 @@ namespace Szenzorhalozat
             {
                 SzenzorId = this.Id,
                 MeresIdeje = DateTime.Now,
-                Homerseklet = this.CurrentValue
+                Adat = this.CurrentValue
             };
 
             MeresiAdatKeszult?.Invoke(adat);

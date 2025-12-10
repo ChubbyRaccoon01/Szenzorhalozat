@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace Szenzorhalozat
 {
@@ -10,28 +8,61 @@ namespace Szenzorhalozat
     {
         static void Main(string[] args)
         {
-            List<Sensor> szenzorok = new List<Sensor>();
-            szenzorok.Add(new TemperatureSensor());
-            szenzorok.Add(new TemperatureSensor());
-
-            foreach (var szenzor in szenzorok)
-            {
-                Console.WriteLine(szenzor.ToString());
-            }
+            var system = new Szenzorhalozat();
             
-            using (Database db = new Database())
+            var t1 = new TemperatureSensor();
+            var r1 = new RotationSensor();
+            system.SzenzorHozzaadas(t1);
+            system.SzenzorHozzaadas(r1);
+
+            
+            using (var db = new Database())
             {
                 
-                foreach (var szenzor in szenzorok)
-                {
-                    db.AddSensor(szenzor);
-                }
+                db.AddSensor(t1);
+                db.AddSensor(r1);
 
-                Console.WriteLine("\nAdatok az aktuális futtatásból:");
-                db.GetAllSensors();
-                
+                while (true)
+                {
+                    Console.WriteLine("\n1) List sensors  2) Export JSON  3) Show DB  4) Exit");
+                    var key = Console.ReadKey(intercept: true).KeyChar;
+                    Console.WriteLine();
+                    if (key == '1')
+                    {
+                        foreach (var s in system.Szenzorok) Console.WriteLine(s);
+                    }
+                    else if (key == '3')
+                    {
+                        Console.WriteLine("DB contents:");
+                        db.GetAllSensors(); 
+                    }
+                    else if (key == '4')
+                    {
+                        break;
+                    }
+                    else if (key == '2')
+                    {
+                        string fileName = "sensors_export.json";
+
+                        Console.WriteLine("Beginning serialization...");
+                        string jsonString = JsonSerializer.Serialize(system.Szenzorok, new JsonSerializerOptions { WriteIndented = true });
+                        Console.WriteLine("Serialization Complete.");
+                        using (var writer = new System.IO.StreamWriter(fileName))
+                        {
+                            writer.Write(jsonString);
+                        }
+                        Console.WriteLine($"Export complete. Filename:{fileName}");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Unknown option.");
+                    }
+                }
             }
 
+            
+            
+            
         }
     }
 }
