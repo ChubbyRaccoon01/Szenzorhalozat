@@ -79,7 +79,7 @@ namespace Szenzorhalozat
                     break;
                 case 3:
                     Console.WriteLine("DB contents:");
-                    db.GetAllSensors();
+                    db.GetAllMeresiAdatok();
                     break;
                 case 4:
                     Console.WriteLine("Exiting...");
@@ -112,15 +112,6 @@ namespace Szenzorhalozat
         { 
             string input = Console.ReadLine();
             return int.Parse(input);
-
-            
-            
-            
-            
-
-
-
-           
         }
     }
 }
