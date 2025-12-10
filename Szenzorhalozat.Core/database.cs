@@ -70,6 +70,22 @@ namespace Szenzorhalozat
             col.DeleteAll();
         }
 
+        public void AddMeresiAdat(MeresiAdat adat)
+        {
+            var col = db.GetCollection<MeresiAdat>(currentTableName + "_Adatok");
+            col.Insert(adat);
+        }
+
+        public void GetAllMeresiAdatok()
+        {
+            var col = db.GetCollection<MeresiAdat>(currentTableName + "_Adatok");
+            var adatok = col.FindAll();
+            foreach (var adat in adatok)
+            {
+                Console.WriteLine($"Szenzor ID: {adat.SzenzorId}, Meres ideje: {adat.MeresIdeje}, Homerseklet: {adat.Homerseklet}");
+            }
+        }
+
     }
 }
 

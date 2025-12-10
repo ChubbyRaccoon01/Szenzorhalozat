@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Szenzorhalozat;
 
 namespace Szenzorhalozat
 {
@@ -63,8 +67,26 @@ namespace Szenzorhalozat
             
             
             
+            var szenzorhalo = new Szenzorhalozat();
+            
+            szenzorhalo.SzenzorHozzaadas(new TemperatureSensor());
+            szenzorhalo.SzenzorHozzaadas(new TemperatureSensor());
+            szenzorhalo.SzenzorHozzaadas(new RotationSensor());
+            szenzorhalo.SzenzorHozzaadas(new VibrationSensor());
+            szenzorhalo.SzenzorHozzaadas(new CO2Sensor());
+            szenzorhalo.SzenzorHozzaadas(new PressureSensor());
+
+
+            szenzorhalo.MeresInditas();
+
+            Console.WriteLine("\nAz adatbázisban tárolt mérési adatok:");
+            szenzorhalo.Database.GetAllMeresiAdatok();
+
+            Console.WriteLine("\nAz adatbázis statisztikája:");
+            szenzorhalo.Database.GetAllTables();
+
+            szenzorhalo.Database.Dispose();
         }
     }
 }
-
 
